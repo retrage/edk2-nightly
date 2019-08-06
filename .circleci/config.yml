@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: ubuntu:bionic
-    working_directory: /src
+    working_directory: /src/edk2
     steps:
       - run:
           name: Install dependencies
