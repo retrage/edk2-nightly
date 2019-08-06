@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: ubuntu:bionic
-    working_directory: /src/edk2
+    working_directory: /src
     steps:
       - run:
           name: Install dependencies
@@ -18,15 +18,20 @@ jobs:
           name: Checkout EDK2
           command: |
             git clone https://github.com/tianocore/edk2.git --depth 1
-            cd edk2
+      - run:
+          name: Update submodules
+          working_directory: /src/edk2
+          command: |
             git submodule update --init --recursive
       - run:
           name: Compile build tools
+          working_directory: /src/edk2
           command: |
             make -C BaseTools
             source ./edksetup.sh
       - run:
           name: Build OVMF X64 Debug
+          working_directory: /src/edk2
           command: |
             build -p OvmfPkg/OvmfPkgX64.dsc -b DEBUG -a X64 -t GCC5
       - store_artifacts:
@@ -40,6 +45,7 @@ jobs:
           destination: X64Debug_OVMF_VARS.fd
       - run:
           name: Build OVMF X64 Release
+          working_directory: /src/edk2
           command: |
             build -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -a X64 -t GCC5
       - store_artifacts:
