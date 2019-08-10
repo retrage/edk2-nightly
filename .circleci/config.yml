@@ -102,5 +102,12 @@ jobs:
 workflows:
   version: 2.1
   nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - build
