@@ -10,7 +10,7 @@ commands:
     parameters:
       dsc:
         type: string
-        default: "OvmfPkg/OvmfPkgX64.dsc"
+        default: "X64"
       arch:
         type: string
         default: "X64"
@@ -23,14 +23,27 @@ commands:
           command: |
             source ./edksetup.sh
             build -q \
-              -p << parameters.dsc >> \
+              -p OvmfPkg/OvmfPkg<< parameters.dsc >>.dsc \
               -b << parameters.target >> \
               -a << parameters.arch >> \
               -t GCC5
+      - run:
+          name: Deploy OVMF
+          working_directory: /src/edk2-nightly
+          environment:
+            SRC: /src/edk2/Build/Ovmf<< parameters.dsc >>/<< parameters.target >>_GCC5/FV
+            DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.dsc >>
+          command: |
+            cp ${SRC}/OVMF.fd ${DST}_OVMF.fd
+            cp ${SRC}/OVMF_CODE.fd ${DST}_OVMF_CODE.fd
+            cp ${SRC}/OVMF_VARS.fd ${DST}_OVMF_VARS.fd
+            bash deploy.sh
 jobs:
   prepare:
     executor: build-executor
     steps:
+      - checkout:
+          path: /src/edk2-nightly
       - run:
           name: Checkout EDK2
           working_directory: /src
@@ -46,14 +59,16 @@ jobs:
             make -C BaseTools
       - save_cache:
           key: src-cache
-          paths: /src/edk2
+          paths:
+            - /src/edk2
+            - /src/edk2-nightly
   ovmf-x64-release:
     executor: build-executor
     steps:
       - restore_cache:
           key: src-cache
       - ovmf:
-          dsc: "OvmfPkg/OvmfPkgX64.dsc"
+          dsc: "X64"
           arch: "X64"
           target: "RELEASE"
   ovmf-x64-debug:
@@ -62,7 +77,7 @@ jobs:
       - restore_cache:
           key: src-cache
       - ovmf:
-          dsc: "OvmfPkg/OvmfPkgX64.dsc"
+          dsc: "X64"
           arch: "X64"
           target: "DEBUG"
 workflows:
