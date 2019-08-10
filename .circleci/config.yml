@@ -58,7 +58,7 @@ jobs:
           command: |
             make -C BaseTools
       - save_cache:
-          key: src-cache
+          key: src-cache-{{ .Revision }}
           paths:
             - /src/edk2
             - /src/edk2-nightly
@@ -66,7 +66,7 @@ jobs:
     executor: build-executor
     steps:
       - restore_cache:
-          key: src-cache
+          key: src-cache-{{ .Revision }}
       - ovmf:
           dsc: "X64"
           arch: "X64"
@@ -75,7 +75,7 @@ jobs:
     executor: build-executor
     steps:
       - restore_cache:
-          key: src-cache
+          key: src-cache-{{ .Revision }}
       - ovmf:
           dsc: "X64"
           arch: "X64"
