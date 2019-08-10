@@ -5,4 +5,4 @@ git config --global user.email "<>"
 git add -A
 git commit -m "[ci skip] Deploy nightly build"
 
-git push > /dev/null 2>&1
+git push $(git config --get remote.origin.url) master:master > /dev/null 2>&1
