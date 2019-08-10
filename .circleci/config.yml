@@ -1,19 +1,34 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  build-executor:
     docker:
-      - image: ubuntu:bionic
+      - image: retrage/edk2-nightly:latest
     working_directory: /src/edk2
+
+commands:
+  ovmf:
+    description: "Build OVMF"
+    parameters:
+      dsc:
+        type: string
+        default: "OvmfPkg/OvmfPkgX64.dsc"
+      arch:
+        type: string
+        default: "X64"
+      target:
+        type: string
+        default: "RELEASE"
     steps:
       - run:
-          name: Install dependencies
+          name: Build OVMF
           command: |
-            apt-get update
-            apt-get install -y \
-              build-essential python3.7 uuid-dev iasl git \
-              gcc-5 nasm python3-distutils
-            apt-get clean
-            ln -sf /usr/bin/python3.7 /usr/bin/python
+            source ./edksetup.sh
+            build -q -p parameters.dsc -b parameters.target \
+              -a parameters.arch -t GCC5
+jobs:
+  prepare:
+    executors: build-executor
+    steps:
       - run:
           name: Checkout EDK2
           working_directory: /src
@@ -27,32 +42,38 @@ jobs:
           name: Compile build tools
           command: |
             make -C BaseTools
-            source ./edksetup.sh
-      - run:
-          name: Build OVMF X64 Debug
-          command: |
-            source ./edksetup.sh
-            build -p OvmfPkg/OvmfPkgX64.dsc -b DEBUG -a X64 -t GCC5
-      - store_artifacts:
-          path: /src/edk2/Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd
-          destination: X64Debug_OVMF.fd
-      - store_artifacts:
-          path: /src/edk2/Build/OvmfX64/DEBUG_GCC5/FV/OVMF_CODE.fd
-          destination: X64Debug_OVMF_CODE.fd
-      - store_artifacts:
-          path: /src/edk2/Build/OvmfX64/DEBUG_GCC5/FV/OVMF_VARS.fd
-          destination: X64Debug_OVMF_VARS.fd
-      - run:
-          name: Build OVMF X64 Release
-          command: |
-            source ./edksetup.sh
-            build -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -a X64 -t GCC5
-      - store_artifacts:
-          path: /src/edk2/Build/OvmfX64/RELEASE_GCC5/FV/OVMF.fd
-          destination: X64Release_OVMF.fd
-      - store_artifacts:
-          path: /src/edk2/Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd
-          destination: X64Release_OVMF_CODE.fd
-      - store_artifacts:
-          path: /src/edk2/Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd
-          destination: X64Release_OVMF_VARS.fd
+      - save_cache:
+        key: src-cache
+        paths: /src/edk2
+
+  ovmf-x64-release:
+    executors: build-executor
+    steps:
+      - restore_cache:
+        keys: src-cache
+      - ovmf:
+          - dsc: "OvmfPkg/OvmfPkgX64.dsc"
+          - arch: "X64"
+          - target: "RELEASE"
+
+  ovmf-x64-debug:
+    executors: build-executor
+    steps:
+      - restore_cache:
+        keys: src-cache
+      - ovmf:
+          - dsc: "OvmfPkg/OvmfPkgX64.dsc"
+          - arch: "X64"
+          - target: "DEBUG"
+
+workflows:
+  version: 2.1
+  nightly:
+    jobs:
+      - prepare
+      - ovmf-x64-release
+        requires:
+          - prepare
+      - ovmf-x64-debug
+        requires:
+          - prepare
