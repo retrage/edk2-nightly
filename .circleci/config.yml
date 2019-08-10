@@ -22,8 +22,11 @@ commands:
           name: Build OVMF
           command: |
             source ./edksetup.sh
-            build -q -p parameters.dsc -b parameters.target \
-              -a parameters.arch -t GCC5
+            build -q \
+              -p << parameters.dsc >> \
+              -b << parameters.target >> \
+              -a << parameters.arch >> \
+              -t GCC5
 jobs:
   prepare:
     executor: build-executor
