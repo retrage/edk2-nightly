@@ -4,7 +4,6 @@ executors:
     docker:
       - image: retrage/edk2-nightly:latest
     working_directory: /src/edk2
-
 commands:
   ovmf:
     description: "Build OVMF"
@@ -45,7 +44,6 @@ jobs:
       - save_cache:
         key: src-cache
         paths: /src/edk2
-
   ovmf-x64-release:
     executors: build-executor
     steps:
@@ -55,7 +53,6 @@ jobs:
           - dsc: "OvmfPkg/OvmfPkgX64.dsc"
           - arch: "X64"
           - target: "RELEASE"
-
   ovmf-x64-debug:
     executors: build-executor
     steps:
@@ -65,15 +62,14 @@ jobs:
           - dsc: "OvmfPkg/OvmfPkgX64.dsc"
           - arch: "X64"
           - target: "DEBUG"
-
 workflows:
   version: 2.1
   nightly:
     jobs:
       - prepare
-      - ovmf-x64-release
+      - ovmf-x64-release:
         requires:
           - prepare
-      - ovmf-x64-debug
+      - ovmf-x64-debug:
         requires:
           - prepare
