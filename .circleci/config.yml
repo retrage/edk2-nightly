@@ -37,7 +37,6 @@ commands:
             cp ${SRC}/OVMF.fd ${DST}_OVMF.fd
             cp ${SRC}/OVMF_CODE.fd ${DST}_OVMF_CODE.fd
             cp ${SRC}/OVMF_VARS.fd ${DST}_OVMF_VARS.fd
-            bash deploy.sh
   shell:
     description: "Build UEFI Shell"
     parameters:
@@ -47,6 +46,9 @@ commands:
       target:
         type: string
         default: "RELEASE"
+      guid:
+        type: string
+        default: "EA4BB293-2D7F-4456-A681-1F22F42CD0BC"
     steps:
       - run:
           name: Build UEFI Shell
@@ -64,10 +66,9 @@ commands:
             SRC: /src/edk2/Build/Shell/<< parameters.target >>_GCC5/<< parameters.arch >>
             DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
           command: |
-            cp ${SRC}/Shell.efi ${DST}_Shell.efi
-            bash deploy.sh
+            cp ${SRC}/Shell_<< parameters.guid >>.efi ${DST}_Shell.efi
 jobs:
-  prepare:
+  build:
     executor: build-executor
     steps:
       - checkout:
@@ -85,59 +86,28 @@ jobs:
           name: Compile build tools
           command: |
             make -C BaseTools
-      - save_cache:
-          key: src-cache-{{ .Revision }}
-          paths:
-            - /src/edk2
-            - /src/edk2-nightly
-  ovmf-x64-release:
-    executor: build-executor
-    steps:
-      - restore_cache:
-          key: src-cache-{{ .Revision }}
       - ovmf:
-          dsc: "X64"
-          arch: "X64"
           target: "RELEASE"
-  ovmf-x64-debug:
-    executor: build-executor
-    steps:
-      - restore_cache:
-          key: src-cache-{{ .Revision }}
       - ovmf:
-          dsc: "X64"
-          arch: "X64"
           target: "DEBUG"
-  shell-x64-release:
-    executor: build-executor
-    steps:
-      - restore_cache:
-          key: src-cache-{{ .Revision }}
       - shell:
-          arch: "X64"
           target: "RELEASE"
-  shell-x64-debug:
-    executor: build-executor
-    steps:
-      - restore_cache:
-          key: src-cache-{{ .Revision }}
       - shell:
-          arch: "X64"
           target: "DEBUG"
+      - run:
+          name: Deploy binaries
+          working_directory: /src/edk2-nightly
+          command: |
+            bash deploy.sh
 workflows:
   version: 2.1
   nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
     jobs:
-      - prepare
-      - ovmf-x64-release:
-          requires:
-            - prepare
-      - ovmf-x64-debug:
-          requires:
-            - prepare
-      - shell-x64-release:
-          requires:
-            - prepare
-      - shell-x64-debug:
-          requires:
-            - prepare
+      - build
