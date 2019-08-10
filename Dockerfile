@@ -12,4 +12,7 @@ RUN apt-get update \
     nasm \
     python3-distutils \
   && apt-get clean \
-  && ln -sf /usr/bin/python3.7 /usr/bin/python
+  && ln -sf /usr/bin/python3.7 /usr/bin/python \
+RUN mkdir -p ~/.ssh \
+  && touch ~/.ssh/known_hosts \
+  && ssh-keyscan github.com >> ~/.ssh/known_hosts
