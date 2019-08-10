@@ -21,6 +21,7 @@ commands:
       - run:
           name: Add github.com to known_hosts
           command: |
+            mkdir -p ~/.ssh
             touch ~/.ssh/known_hosts
             ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
