@@ -26,7 +26,7 @@ commands:
               -a parameters.arch -t GCC5
 jobs:
   prepare:
-    executors: build-executor
+    executor: build-executor
     steps:
       - run:
           name: Checkout EDK2
@@ -42,34 +42,34 @@ jobs:
           command: |
             make -C BaseTools
       - save_cache:
-        key: src-cache
-        paths: /src/edk2
+          key: src-cache
+          paths: /src/edk2
   ovmf-x64-release:
-    executors: build-executor
+    executor: build-executor
     steps:
       - restore_cache:
-        keys: src-cache
+          key: src-cache
       - ovmf:
-          - dsc: "OvmfPkg/OvmfPkgX64.dsc"
-          - arch: "X64"
-          - target: "RELEASE"
+          dsc: "OvmfPkg/OvmfPkgX64.dsc"
+          arch: "X64"
+          target: "RELEASE"
   ovmf-x64-debug:
-    executors: build-executor
+    executor: build-executor
     steps:
       - restore_cache:
-        keys: src-cache
+          key: src-cache
       - ovmf:
-          - dsc: "OvmfPkg/OvmfPkgX64.dsc"
-          - arch: "X64"
-          - target: "DEBUG"
+          dsc: "OvmfPkg/OvmfPkgX64.dsc"
+          arch: "X64"
+          target: "DEBUG"
 workflows:
   version: 2.1
   nightly:
     jobs:
       - prepare
       - ovmf-x64-release:
-        requires:
-          - prepare
+          requires:
+            - prepare
       - ovmf-x64-debug:
-        requires:
-          - prepare
+          requires:
+            - prepare
