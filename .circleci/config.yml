@@ -53,6 +53,7 @@ commands:
       - run:
           name: Build UEFI Shell
           command: |
+            export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
             source ./edksetup.sh
             build -q \
               -p ShellPkg/ShellPkg.dsc \
@@ -94,6 +95,12 @@ jobs:
           target: "RELEASE"
       - shell:
           target: "DEBUG"
+      - shell:
+          arch: "AARCH64"
+          target: "DEBUG"
+      - shell:
+          arch: "AARCH64"
+          target: "RELEASE"
       - run:
           name: Deploy binaries
           working_directory: /src/edk2-nightly

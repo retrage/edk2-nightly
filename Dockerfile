@@ -12,8 +12,11 @@ RUN apt-get update \
     gcc-5 \
     nasm \
     python3-distutils \
+    gcc-5-aarch64-linux-gnu \
   && apt-get clean \
-  && ln -sf /usr/bin/python3.7 /usr/bin/python
+  && ln -sf /usr/bin/python3.7 /usr/bin/python \
+  && ln -sf /usr/bin/aarch64-linux-gnu-gcc-5 /usr/bin/aarch64-linux-gnu-gcc \
+  && ln -sf /usr/bin/aarch64-linux-gnu-gcc-ar-5 /usr/bin/aarch64-linux-gnu-gcc-ar
 
 RUN mkdir -p ~/.ssh \
   && touch ~/.ssh/known_hosts \
