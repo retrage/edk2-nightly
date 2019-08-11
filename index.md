@@ -9,9 +9,12 @@ This repository provides unofficial
 nightly build.
 It currently builds
 [OVMF](https://github.com/tianocore/tianocore.github.io/wiki/OVMF)
+for x64,
+[ArmVirtPkg](https://github.com/tianocore/tianocore.github.io/wiki/ArmVirtPkg)
+for AArch64,
 and
 [UEFI Shell](https://github.com/tianocore/tianocore.github.io/wiki/Shell)
-for x64 both Release and Debug.
+for x64 and AArch64 both Debug and Release.
 
 ## Pre-built binaries
 
