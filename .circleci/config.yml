@@ -108,6 +108,9 @@ jobs:
             bash deploy.sh
 workflows:
   version: 2.1
+  commit:
+    jobs:
+      - build
   nightly:
     triggers:
       - schedule:
