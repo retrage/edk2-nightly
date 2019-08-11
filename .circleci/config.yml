@@ -68,6 +68,35 @@ commands:
             DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
           command: |
             cp ${SRC}/Shell_<< parameters.guid >>.efi ${DST}_Shell.efi
+  arm-virt:
+    description: "Build ArmVirt"
+    parameters:
+      arch:
+        type: string
+        default: "AARCH64"
+      target:
+        type: string
+        default: "RELEASE"
+    steps:
+      - run:
+          name: Build ArmVirt
+          command: |
+            export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
+            source ./edksetup.sh
+            build -q \
+              -p ArmVirtPkg/ArmVirtQemu.dsc \
+              -b << parameters.target >> \
+              -a << parameters.arch >> \
+              -t GCC5
+      - run:
+          name: Deploy ArmVirt
+          working_directory: /src/edk2-nightly
+          environment:
+            SRC: /src/edk2/Build/ArmVirtQemu-<< parameters.arch>>/<< parameters.target >>_GCC5/FV
+            DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
+          command: |
+            cp ${SRC}/QEMU_EFI.fd ${DST}_QEMU_EFI.fd
+            cp ${SRC}/QEMU_VARS.fd ${DST}_QEMU_VARS.fd
 jobs:
   build:
     executor: build-executor
@@ -94,6 +123,10 @@ jobs:
       - shell:
           target: "RELEASE"
       - shell:
+          target: "DEBUG"
+      - arm-virt:
+          target: "RELEASE"
+      - arm-virt:
           target: "DEBUG"
       - shell:
           arch: "AARCH64"
