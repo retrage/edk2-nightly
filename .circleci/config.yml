@@ -5,6 +5,35 @@ executors:
       - image: retrage/edk2-nightly:latest
     working_directory: /src/edk2
 commands:
+  init:
+    description: "Initialize"
+    steps:
+      - run:
+          name: Checkout EDK2
+          working_directory: /src
+          command: |
+            git clone https://github.com/tianocore/edk2.git --depth 1
+      - run:
+          name: Update submodules
+          command: |
+            git submodule update --init --recursive
+      - run:
+          name: Compile build tools
+          command: |
+            make -C BaseTools
+  fini:
+    description: "Finalize"
+    steps:
+      - run:
+          name: Checkout source code
+          working_directory: /src
+          command: |
+            git clone https://github.com/retrage/edk2-nightly.git
+      - run:
+          name: Deploy binaries
+          working_directory: /src/edk2-nightly
+          command: |
+            bash deploy.sh
   ovmf:
     description: "Build OVMF"
     parameters:
@@ -98,52 +127,54 @@ commands:
             cp ${SRC}/QEMU_EFI.fd ${DST}_QEMU_EFI.fd
             cp ${SRC}/QEMU_VARS.fd ${DST}_QEMU_VARS.fd
 jobs:
-  build:
+  build-x64-qemu:
     executor: build-executor
     steps:
-      - checkout:
-          path: /src/edk2-nightly
-      - run:
-          name: Checkout EDK2
-          working_directory: /src
-          command: |
-            git clone https://github.com/tianocore/edk2.git --depth 1
-      - run:
-          name: Update submodules
-          command: |
-            git submodule update --init --recursive
-      - run:
-          name: Compile build tools
-          command: |
-            make -C BaseTools
+      - init
       - ovmf:
           target: "RELEASE"
       - ovmf:
           target: "DEBUG"
-      - shell:
-          target: "RELEASE"
-      - shell:
-          target: "DEBUG"
+      - fini
+  build-aarch64-qemu:
+    executor: build-executor
+    steps:
+      - init
       - arm-virt:
           target: "RELEASE"
       - arm-virt:
           target: "DEBUG"
+      - fini
+  build-x64-shell:
+    executor: build-executor
+    steps:
+      - init
+      - shell:
+          arch: "X64"
+          target: "RELEASE"
+      - shell:
+          arch: "X64"
+          target: "DEBUG"
+      - fini
+  build-aarch64-shell:
+    executor: build-executor
+    steps:
+      - init
       - shell:
           arch: "AARCH64"
           target: "DEBUG"
       - shell:
           arch: "AARCH64"
           target: "RELEASE"
-      - run:
-          name: Deploy binaries
-          working_directory: /src/edk2-nightly
-          command: |
-            bash deploy.sh
+      - fini
 workflows:
   version: 2.1
   commit:
     jobs:
-      - build
+      - build-x64-qemu
+      - build-aarch64-qemu
+      - build-x64-shell
+      - build-aarch64-shell
   nightly:
     triggers:
       - schedule:
@@ -153,4 +184,7 @@ workflows:
               only:
                 - master
     jobs:
-      - build
+      - build-x64-qemu
+      - build-aarch64-qemu
+      - build-x64-shell
+      - build-aarch64-shell
