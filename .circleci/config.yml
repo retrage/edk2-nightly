@@ -13,11 +13,8 @@ commands:
           working_directory: /src
           command: |
             git clone https://github.com/tianocore/edk2.git --depth 1
-      - run:
-          name: Checkout source code
-          working_directory: /src
-          command: |
-            git clone https://github.com/retrage/edk2-nightly.git
+      - checkout:
+          path: /src/edk2-nightly
       - run:
           name: Update submodules
           command: |
