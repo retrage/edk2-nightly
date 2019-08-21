@@ -13,8 +13,10 @@ commands:
           working_directory: /src
           command: |
             git clone https://github.com/tianocore/edk2.git --depth 1
-      - checkout:
-          path: /src/edk2-nightly
+      - run:
+          name: Create target directory
+          command: |
+            mkdir -p /src/edk2-nightly/bin
       - run:
           name: Update submodules
           command: |
@@ -23,14 +25,6 @@ commands:
           name: Compile build tools
           command: |
             make -C BaseTools
-  fini:
-    description: "Finalize"
-    steps:
-      - run:
-          name: Deploy binaries
-          working_directory: /src/edk2-nightly
-          command: |
-            bash deploy.sh
   ovmf:
     description: "Build OVMF"
     parameters:
@@ -178,9 +172,15 @@ jobs:
   deploy:
     executor: build-executor
     steps:
+      - checkout:
+          path: /src/edk2-nightly
       - attach_workspace:
           at: /src/edk2-nightly
-      - fini
+      - run:
+          name: Deploy binaries
+          working_directory: /src/edk2-nightly
+          command: |
+            bash deploy.sh
 workflows:
   version: 2.1
   commit:
