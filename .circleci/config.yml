@@ -63,6 +63,12 @@ commands:
             cp ${SRC}/OVMF.fd ${DST}_OVMF.fd
             cp ${SRC}/OVMF_CODE.fd ${DST}_OVMF_CODE.fd
             cp ${SRC}/OVMF_VARS.fd ${DST}_OVMF_VARS.fd
+      - persist_to_workspace:
+          root: /src/edk2-nightly
+          paths:
+            - bin/<< parameters.target >><< parameters.dsc >>_OVMF.fd
+            - bin/<< parameters.target >><< parameters.dsc >>_OVMF_CODE.fd
+            - bin/<< parameters.target >><< parameters.dsc >>_OVMF_VARS.fd
   shell:
     description: "Build UEFI Shell"
     parameters:
@@ -94,6 +100,10 @@ commands:
             DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
           command: |
             cp ${SRC}/Shell_<< parameters.guid >>.efi ${DST}_Shell.efi
+      - persist_to_workspace:
+          root: /src/edk2-nightly
+          paths:
+            - bin/<< parameters.target >><< parameters.arch >>_Shell.efi
   arm-virt:
     description: "Build ArmVirt"
     parameters:
@@ -123,6 +133,11 @@ commands:
           command: |
             cp ${SRC}/QEMU_EFI.fd ${DST}_QEMU_EFI.fd
             cp ${SRC}/QEMU_VARS.fd ${DST}_QEMU_VARS.fd
+      - persist_to_workspace:
+          root: /src/edk2-nightly
+          paths:
+            - bin/<< parameters.target >><< parameters.arch >>_QEMU_EFI.fd
+            - bin/<< parameters.target >><< parameters.arch >>_QEMU_VARS.fd
 jobs:
   build-x64-qemu:
     executor: build-executor
@@ -132,7 +147,6 @@ jobs:
           target: "RELEASE"
       - ovmf:
           target: "DEBUG"
-      - fini
   build-aarch64-qemu:
     executor: build-executor
     steps:
@@ -141,7 +155,6 @@ jobs:
           target: "RELEASE"
       - arm-virt:
           target: "DEBUG"
-      - fini
   build-x64-shell:
     executor: build-executor
     steps:
@@ -152,7 +165,6 @@ jobs:
       - shell:
           arch: "X64"
           target: "DEBUG"
-      - fini
   build-aarch64-shell:
     executor: build-executor
     steps:
@@ -163,6 +175,11 @@ jobs:
       - shell:
           arch: "AARCH64"
           target: "RELEASE"
+  deploy:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: /src/edk2-nightly
       - fini
 workflows:
   version: 2.1
@@ -172,6 +189,12 @@ workflows:
       - build-aarch64-qemu
       - build-x64-shell
       - build-aarch64-shell
+      - deploy:
+          requires:
+            - build-x64-qemu
+            - build-aarch64-qemu
+            - build-x64-shell
+            - build-aarch64-shell
   nightly:
     triggers:
       - schedule:
@@ -185,3 +208,9 @@ workflows:
       - build-aarch64-qemu
       - build-x64-shell
       - build-aarch64-shell
+      - deploy:
+          requires:
+            - build-x64-qemu
+            - build-aarch64-qemu
+            - build-x64-shell
+            - build-aarch64-shell
