@@ -133,6 +133,18 @@ commands:
             - bin/<< parameters.target >><< parameters.arch >>_QEMU_EFI.fd
             - bin/<< parameters.target >><< parameters.arch >>_QEMU_VARS.fd
 jobs:
+  build-ia32-qemu:
+    executor: build-executor
+    steps:
+      - init
+      - ovmf:
+          dsc: "Ia32"
+          arch: "IA32"
+          target: "RELEASE"
+      - ovmf:
+          dsc: "Ia32"
+          arch: "IA32"
+          target: "DEBUG"
   build-x64-qemu:
     executor: build-executor
     steps:
@@ -148,6 +160,16 @@ jobs:
       - arm-virt:
           target: "RELEASE"
       - arm-virt:
+          target: "DEBUG"
+  build-ia32-shell:
+    executor: build-executor
+    steps:
+      - init
+      - shell:
+          arch: "IA32"
+          target: "RELEASE"
+      - shell:
+          arch: "IA32"
           target: "DEBUG"
   build-x64-shell:
     executor: build-executor
@@ -185,14 +207,18 @@ workflows:
   version: 2.1
   commit:
     jobs:
+      - build-ia32-qemu
       - build-x64-qemu
       - build-aarch64-qemu
+      - build-ia32-shell
       - build-x64-shell
       - build-aarch64-shell
       - deploy:
           requires:
+            - build-ia32-qemu
             - build-x64-qemu
             - build-aarch64-qemu
+            - build-ia32-shell
             - build-x64-shell
             - build-aarch64-shell
   nightly:
@@ -204,13 +230,17 @@ workflows:
               only:
                 - master
     jobs:
+      - build-ia32-qemu
       - build-x64-qemu
       - build-aarch64-qemu
+      - build-ia32-shell
       - build-x64-shell
       - build-aarch64-shell
       - deploy:
           requires:
+            - build-ia32-qemu
             - build-x64-qemu
             - build-aarch64-qemu
+            - build-ia32-shell
             - build-x64-shell
             - build-aarch64-shell
