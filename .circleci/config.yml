@@ -44,6 +44,7 @@ commands:
             source ./edksetup.sh
             build -q \
               -p OvmfPkg/OvmfPkg<< parameters.dsc >>.dsc \
+              -D SECURE_BOOT_ENABLE=TRUE \
               -b << parameters.target >> \
               -a << parameters.arch >> \
               -t GCC5
@@ -117,6 +118,7 @@ commands:
             source ./edksetup.sh
             build -q \
               -p ArmVirtPkg/ArmVirtQemu.dsc \
+              -D SECURE_BOOT_ENABLE=TRUE \
               -b << parameters.target >> \
               -a << parameters.arch >> \
               -t GCC5
