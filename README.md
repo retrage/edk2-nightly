@@ -16,73 +16,22 @@ for x64, IA-32, AArch64, ARM, and RISC-V 64-bit both Debug and Release.
 
 ### UEFI images for QEMU
 
-* OVMF x64 Release
-  * [RELEASEX64\_OVMF.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEX64_OVMF.fd)
-  * [RELEASEX64\_OVMF\_CODE.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEX64_OVMF_CODE.fd)
-  * [RELEASEX64\_OVMF\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEX64_OVMF_VARS.fd)
-
-* OVMF x64 Debug
-  * [DEBUGX64\_OVMF.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGX64_OVMF.fd)
-  * [DEBUGX64\_OVMF\_CODE.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGX64_OVMF_CODE.fd)
-  * [DEBUGX64\_OVMF\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGX64_OVMF_VARS.fd)
-
-* OVMF IA-32 Release
-  * [RELEASEIa32\_OVMF.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEIa32_OVMF.fd)
-  * [RELEASEIa32\_OVMF\_CODE.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEIa32_OVMF_CODE.fd)
-  * [RELEASEIa32\_OVMF\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEIa32_OVMF_VARS.fd)
-
-* OVMF IA-32 Debug
-  * [DEBUGIa32\_OVMF.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGIa32_OVMF.fd)
-  * [DEBUGIa32\_OVMF\_CODE.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGIa32_OVMF_CODE.fd)
-  * [DEBUGIa32\_OVMF\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGIa32_OVMF_VARS.fd)
-
-* ArmVirtQemu AArch64 Release
-  * [RELEASEAARCH64\_QEMU\_EFI.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEAARCH64_QEMU_EFI.fd)
-  * [RELEASEAARCH64\_QEMU\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEAARCH64_QEMU_VARS.fd)
-
-* ArmVirtQemu AArch64 Debug
-  * [DEBUGAARCH64\_QEMU\_EFI.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGAARCH64_QEMU_EFI.fd)
-  * [DEBUGAARCH64\_QEMU\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGAARCH64_QEMU_VARS.fd)
-
-* ArmVirtQemu ARM Release
-  * [RELEASEARM\_QEMU\_EFI.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEARM_QEMU_EFI.fd)
-  * [RELEASEARM\_QEMU\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEARM_QEMU_VARS.fd)
-
-* ArmVirtQemu ARM Debug
-  * [DEBUGARM\_QEMU\_EFI.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGARM_QEMU_EFI.fd)
-  * [DEBUGARM\_QEMU\_VARS.fd](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGARM_QEMU_VARS.fd)
+|   GCC5  |                                                                              DEBUG                                                                              |                                                                                   RELEASE                                                                                   |
+|:-------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|   X64   |    [DEBUGX64\_OVMF.fd](bin/DEBUGX64_OVMF.fd)<br>[DEBUGX64\_OVMF\_CODE.fd](bin/DEBUGX64_OVMF_CODE.fd)<br>[DEBUGX64\_OVMF\_VARS.fd](bin/DEBUGX64_OVMF_VARS.fd)    |    [RELEASEX64\_OVMF.fd](bin/RELEASEX64_OVMF.fd)<br>[RELEASEX64\_OVMF\_CODE.fd](bin/RELEASEX64_OVMF_CODE.fd)<br>[RELEASEX64\_OVMF\_VARS.fd](bin/RELEASEX64_OVMF_VARS.fd)    |
+|   IA32  | [DEBUGIA32\_OVMF.fd](bin/DEBUGIA32_OVMF.fd)<br>[DEBUGIA32\_OVMF\_CODE.fd](bin/DEBUGIA32_OVMF_CODE.fd)<br>[DEBUGIA32\_OVMF\_VARS.fd](bin/DEBUGIA32_OVMF_VARS.fd) | [RELEASEIA32\_OVMF.fd](bin/RELEASEIA32_OVMF.fd)<br>[RELEASEIA32\_OVMF\_CODE.fd](bin/RELEASEIA32_OVMF_CODE.fd)<br>[RELEASEIA32\_OVMF\_VARS.fd](bin/RELEASEIA32_OVMF_VARS.fd) |
+| AARCH64 |                    [DEBUGAARCH64\_QEMU\_EFI.fd](bin/DEBUGAARCH64_QEMU_EFI.fd)<br>[DEBUGAARCH64\_QEMU\_VARS.fd](bin/DEBUGAARCH64_QEMU_VARS.fd)                   |                      [RELEASEAARCH64\_QEMU\_EFI.fd](bin/RELEASEAARCH64_QEMU_EFI.fd)<br>[RELEASEAARCH64\_QEMU\_VARS.fd](bin/RELEASEAARCH64_QEMU_VARS.fd)                     |
+| ARM     | [DEBUGARM\_QEMU\_EFI.fd](bin/DEBUGARM_QEMU_EFI.fd)<br>[DEBUGARM\_QEMU\_VARS.fd](bin/DEBUGARM_QEMU_VARS.fd)                                                      | [RELEASEARM\_QEMU\_EFI.fd](bin/RELEASEARM_QEMU_EFI.fd)<br>[RELEASEARM\_QEMU\_VARS.fd](bin/RELEASEARM_QEMU_VARS.fd)                                                          |
 
 ### UEFI Shell
 
-* UEFI Shell x64 Release
-  * [RELEASEX64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEX64_Shell.efi)
-
-* UEFI Shell x64 Debug
-  * [DEBUGX64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGX64_Shell.efi)
-
-* UEFI Shell IA-32 Release
-  * [RELEASEIA32\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEIA32_Shell.efi)
-
-* UEFI Shell IA-32 Debug
-  * [DEBUGIA32\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGIA32_Shell.efi)
-
-* UEFI Shell AArch64 Release
-  * [RELEASEAARCH64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEAARCH64_Shell.efi)
-
-* UEFI Shell AArch64 Debug
-  * [DEBUGAARCH64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGAARCH64_Shell.efi)
-
-* UEFI Shell ARM Release
-  * [RELEASEARM\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASEARM_Shell.efi)
-
-* UEFI Shell ARM Debug
-  * [DEBUGARM\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGARM_Shell.efi)
-
-* UEFI Shell RISC-V 64-bit Release
-  * [RELEASERISCV64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASERISCV64_Shell.efi)
-
-* UEFI Shell RISC-V 64-bit Debug
-  * [DEBUGRISCV64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGRISCV64_Shell.efi)
+|   GCC5  |                         DEBUG                         |                          RELEASE                          |
+|:-------:|:-----------------------------------------------------:|:---------------------------------------------------------:|
+|   X64   |     [DEBUGX64\_Shell.efi](bin/DEBUGX64_Shell.efi)     |     [RELEASEX64\_Shell.efi](bin/RELEASEX64_Shell.efi)     |
+|   IA32  |    [DEBUGIA32\_Shell.efi](bin/DEBUGIA32_Shell.efi)    |    [RELEASEIA32\_Shell.efi](bin/RELEASEIA32_Shell.efi)    |
+| AARCH64 | [DEBUGAARCH64\_Shell.efi](bin/DEBUGAARCH64_Shell.efi) | [RELEASEAARCH64\_Shell.efi](bin/RELEASEAARCH64_Shell.efi) |
+|   ARM   |     [DEBUGARM\_Shell.efi](bin/DEBUGARM_Shell.efi)     |     [RELEASEARM\_Shell.efi](bin/RELEASEARM_Shell.efi)     |
+| RISCV64 | [DEBUGRISCV64\_Shell.efi](bin/DEBUGRISCV64_Shell.efi) | [RELEASERISCV64\_Shell.efi](bin/RELEASERISCV64_Shell.efi) |
 
 ## Build system
 
