@@ -9,12 +9,12 @@ This repository provides unofficial
 nightly build.
 It currently builds
 [OVMF](https://github.com/tianocore/tianocore.github.io/wiki/OVMF)
-for x64,
+for x64 and IA-32,
 [ArmVirtPkg](https://github.com/tianocore/tianocore.github.io/wiki/ArmVirtPkg)
-for AArch64,
+for AArch64 and ARM,
 and
 [UEFI Shell](https://github.com/tianocore/tianocore.github.io/wiki/Shell)
-for x64 and AArch64 both Debug and Release.
+for x64, IA-32, AArch64, ARM, and RISC-V 64-bit both Debug and Release.
 
 ## Pre-built binaries
 
@@ -81,6 +81,12 @@ for x64 and AArch64 both Debug and Release.
 
 * UEFI Shell ARM Debug
   * [DEBUGARM\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGARM_Shell.efi)
+
+* UEFI Shell RISC-V 64-bit Release
+  * [RELEASERISCV64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/RELEASERISCV64_Shell.efi)
+
+* UEFI Shell RISC-V 64-bit Debug
+  * [DEBUGRISCV64\_Shell.efi](https://github.com/retrage/edk2-nightly/raw/master/bin/DEBUGRISCV64_Shell.efi)
 
 ## Build system
 
