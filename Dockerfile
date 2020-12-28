@@ -1,25 +1,22 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 WORKDIR /src
 
 RUN apt-get update \
   && apt-get install -y \
     build-essential \
-    python3.7 \
+    python3.8 \
     uuid-dev \
     iasl \
     git \
-    gcc-5 \
+    gcc \
     nasm \
     python3-distutils \
-    gcc-5-arm-linux-gnueabi \
-    gcc-5-aarch64-linux-gnu \
+    gcc-arm-linux-gnueabi \
+    gcc-aarch64-linux-gnu \
+    gcc-riscv64-unknown-elf \
   && apt-get clean \
-  && ln -sf /usr/bin/python3.7 /usr/bin/python \
-  && ln -sf /usr/bin/arm-linux-gnueabi-gcc-5 /usr/bin/arm-linux-gnueabi-gcc \
-  && ln -sf /usr/bin/arm-linux-gnueabi-gcc-ar-5 /usr/bin/arm-linux-gnueabi-gcc-ar \
-  && ln -sf /usr/bin/aarch64-linux-gnu-gcc-5 /usr/bin/aarch64-linux-gnu-gcc \
-  && ln -sf /usr/bin/aarch64-linux-gnu-gcc-ar-5 /usr/bin/aarch64-linux-gnu-gcc-ar
+  && ln -sf /usr/bin/python3.8 /usr/bin/python
 
 RUN mkdir -p ~/.ssh \
   && touch ~/.ssh/known_hosts \
