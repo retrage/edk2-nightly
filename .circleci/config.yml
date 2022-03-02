@@ -2,7 +2,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: retrage/edk2-nightly:latest
+      - image: ghcr.io/retrage/edk2-nightly:latest
     working_directory: /src/edk2
 commands:
   init:
