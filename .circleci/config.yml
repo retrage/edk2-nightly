@@ -82,6 +82,7 @@ commands:
           command: |
             export GCC5_ARM_PREFIX=arm-linux-gnueabi-
             export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
+            export GCC5_LOONGARCH64_PREFIX=loongarch64-linux-gnu-
             export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
             source ./edksetup.sh
             build -q \
@@ -226,6 +227,16 @@ jobs:
       - shell:
           arch: "RISCV64"
           target: "RELEASE"
+  build-loongarch64-shell:
+    executor: build-executor
+    steps:
+      - init
+      - shell:
+          arch: "LOONGARCH64"
+          target: "DEBUG"
+      - shell:
+          arch: "LOONGARCH64"
+          target: "RELEASE"
   deploy:
     executor: build-executor
     steps:
@@ -251,6 +262,7 @@ workflows:
       - build-arm-shell
       - build-aarch64-shell
       - build-riscv64-shell
+      - build-loongarch64-shell
       - deploy:
           requires:
             - build-ia32-qemu
@@ -262,6 +274,7 @@ workflows:
             - build-arm-shell
             - build-aarch64-shell
             - build-riscv64-shell
+            - build-loongarch64-shell
   nightly:
     triggers:
       - schedule:
@@ -280,6 +293,7 @@ workflows:
       - build-arm-shell
       - build-aarch64-shell
       - build-riscv64-shell
+      - build-loongarch64-shell
       - deploy:
           requires:
             - build-ia32-qemu
@@ -291,3 +305,4 @@ workflows:
             - build-arm-shell
             - build-aarch64-shell
             - build-riscv64-shell
+            - build-loongarch64-shell
