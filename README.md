@@ -10,7 +10,7 @@ for x64 and IA-32,
 for AArch64 and ARM,
 and
 [UEFI Shell](https://github.com/tianocore/tianocore.github.io/wiki/Shell)
-for x64, IA-32, AArch64, ARM, and RISC-V 64-bit both Debug and Release.
+for x64, IA-32, AArch64, ARM, RISC-V 64-bit, and LoongArch64 both Debug and Release.
 
 ## Pre-built binaries
 
@@ -25,13 +25,14 @@ for x64, IA-32, AArch64, ARM, and RISC-V 64-bit both Debug and Release.
 
 ### UEFI Shell
 
-|   GCC5  |                         DEBUG                         |                          RELEASE                          |
-|:-------:|:-----------------------------------------------------:|:---------------------------------------------------------:|
-|   X64   |     [DEBUGX64\_Shell.efi](bin/DEBUGX64_Shell.efi)     |     [RELEASEX64\_Shell.efi](bin/RELEASEX64_Shell.efi)     |
-|   IA32  |    [DEBUGIA32\_Shell.efi](bin/DEBUGIA32_Shell.efi)    |    [RELEASEIA32\_Shell.efi](bin/RELEASEIA32_Shell.efi)    |
-| AARCH64 | [DEBUGAARCH64\_Shell.efi](bin/DEBUGAARCH64_Shell.efi) | [RELEASEAARCH64\_Shell.efi](bin/RELEASEAARCH64_Shell.efi) |
-|   ARM   |     [DEBUGARM\_Shell.efi](bin/DEBUGARM_Shell.efi)     |     [RELEASEARM\_Shell.efi](bin/RELEASEARM_Shell.efi)     |
-| RISCV64 | [DEBUGRISCV64\_Shell.efi](bin/DEBUGRISCV64_Shell.efi) | [RELEASERISCV64\_Shell.efi](bin/RELEASERISCV64_Shell.efi) |
+|     GCC5    |                             DEBUG                             |                              RELEASE                              |
+|:-----------:|:-------------------------------------------------------------:|:-----------------------------------------------------------------:|
+|     X64     |         [DEBUGX64\_Shell.efi](bin/DEBUGX64_Shell.efi)         |         [RELEASEX64\_Shell.efi](bin/RELEASEX64_Shell.efi)         |
+|     IA32    |        [DEBUGIA32\_Shell.efi](bin/DEBUGIA32_Shell.efi)        |        [RELEASEIA32\_Shell.efi](bin/RELEASEIA32_Shell.efi)        |
+|   AARCH64   |     [DEBUGAARCH64\_Shell.efi](bin/DEBUGAARCH64_Shell.efi)     |     [RELEASEAARCH64\_Shell.efi](bin/RELEASEAARCH64_Shell.efi)     |
+|     ARM     |         [DEBUGARM\_Shell.efi](bin/DEBUGARM_Shell.efi)         |         [RELEASEARM\_Shell.efi](bin/RELEASEARM_Shell.efi)         |
+|   RISCV64   |     [DEBUGRISCV64\_Shell.efi](bin/DEBUGRISCV64_Shell.efi)     |     [RELEASERISCV64\_Shell.efi](bin/RELEASERISCV64_Shell.efi)     |
+| LOONGARCH64 | [DEBUGLOONGARCH64\_Shell.efi](bin/DEBUGLOONGARCH64_Shell.efi) | [RELEASELOONGARCH64\_Shell.efi](bin/RELEASELOONGARCH64_Shell.efi) |
 
 ## Build system
 
