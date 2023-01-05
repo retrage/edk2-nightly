@@ -240,6 +240,9 @@ jobs:
   deploy:
     executor: build-executor
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "07:24:6a:07:33:28:51:58:ad:57:cd:2c:be:4e:f1:06"
       - checkout:
           path: /src/edk2-nightly
       - attach_workspace:
