@@ -138,6 +138,39 @@ commands:
           paths:
             - bin/<< parameters.target >><< parameters.arch >>_QEMU_EFI.fd
             - bin/<< parameters.target >><< parameters.arch >>_QEMU_VARS.fd
+  riscv-virt:
+    description: "Build RiscVVirt"
+    parameters:
+      arch:
+        type: string
+        default: "RISCV64"
+      target:
+        type: string
+        default: "RELEASE"
+    steps:
+      - run:
+          name: Build RiscVVirt
+          command: |
+            export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
+            source ./edksetup.sh
+            build -q \
+              -p OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc \
+              -D SECURE_BOOT_ENABLE=TRUE \
+              -b << parameters.target >> \
+              -a << parameters.arch >> \
+              -t GCC5
+      - run:
+          name: Deploy RiscVVirt
+          working_directory: /src/edk2-nightly
+          environment:
+            SRC: /src/edk2/Build/RiscVVirtQemu/<< parameters.target >>_GCC5/FV
+            DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
+          command: |
+            cp ${SRC}/RISCV_VIRT.fd ${DST}_VIRT.fd
+      - persist_to_workspace:
+          root: /src/edk2-nightly
+          paths:
+            - bin/<< parameters.target >><< parameters.arch >>_VIRT.fd
 jobs:
   build-ia32-qemu:
     executor: build-executor
@@ -176,6 +209,14 @@ jobs:
       - arm-virt:
           target: "RELEASE"
       - arm-virt:
+          target: "DEBUG"
+  build-riscv64-qemu:
+    executor: build-executor
+    steps:
+      - init
+      - riscv-virt:
+          target: "RELEASE"
+      - riscv-virt:
           target: "DEBUG"
   build-ia32-shell:
     executor: build-executor
@@ -260,6 +301,7 @@ workflows:
       - build-x64-qemu
       - build-arm-qemu
       - build-aarch64-qemu
+      - build-riscv64-qemu
       - build-ia32-shell
       - build-x64-shell
       - build-arm-shell
@@ -272,6 +314,7 @@ workflows:
             - build-x64-qemu
             - build-arm-qemu
             - build-aarch64-qemu
+            - build-riscv64-qemu
             - build-ia32-shell
             - build-x64-shell
             - build-arm-shell
@@ -291,6 +334,7 @@ workflows:
       - build-x64-qemu
       - build-arm-qemu
       - build-aarch64-qemu
+      - build-riscv64-qemu
       - build-ia32-shell
       - build-x64-shell
       - build-arm-shell
@@ -303,6 +347,7 @@ workflows:
             - build-x64-qemu
             - build-arm-qemu
             - build-aarch64-qemu
+            - build-riscv64-qemu
             - build-ia32-shell
             - build-x64-shell
             - build-arm-shell
