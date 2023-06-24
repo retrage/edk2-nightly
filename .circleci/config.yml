@@ -166,11 +166,13 @@ commands:
             SRC: /src/edk2/Build/RiscVVirtQemu/<< parameters.target >>_GCC5/FV
             DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
           command: |
-            cp ${SRC}/RISCV_VIRT.fd ${DST}_VIRT.fd
+            cp ${SRC}/RISCV_VIRT_CODE.fd ${DST}_VIRT_CODE.fd
+            cp ${SRC}/RISCV_VIRT_VARS.fd ${DST}_VIRT_VARS.fd
       - persist_to_workspace:
           root: /src/edk2-nightly
           paths:
-            - bin/<< parameters.target >><< parameters.arch >>_VIRT.fd
+            - bin/<< parameters.target >><< parameters.arch >>_VIRT_CODE.fd
+            - bin/<< parameters.target >><< parameters.arch >>_VIRT_VARS.fd
 jobs:
   build-ia32-qemu:
     executor: build-executor
