@@ -24,9 +24,9 @@ RUN apt-get update \
   && apt-get clean \
   && ln -sf /usr/bin/python3 /usr/bin/python
 
-# Build and install nasm 2.15.05 manually
+# Build and install nasm 2.16.01 manually
 RUN git clone https://github.com/netwide-assembler/nasm.git \
-    --branch nasm-2.15.05 \
+    --branch nasm-2.16.01 \
     --depth 1 \
   && cd nasm \
   && ./autogen.sh \
@@ -36,9 +36,9 @@ RUN git clone https://github.com/netwide-assembler/nasm.git \
   && cd .. \
   && rm -rf nasm
 
-# Manually build and install binutils 2.39 for loongson (loongarch64)
+# Manually build and install binutils 2.42 for loongson (loongarch64)
 RUN git clone https://sourceware.org/git/binutils-gdb.git \
-    --branch=binutils-2_39-branch \
+    --branch=binutils-2_42 \
     --depth 1 \
   && mkdir -p binutils-gdb/build \
   && cd binutils-gdb/build \
