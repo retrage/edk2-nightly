@@ -1,44 +1,35 @@
-FROM ubuntu:latest
+FROM ubuntu:24.04
 
 WORKDIR /src
 
-RUN apt-get update \
+RUN \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  apt-get update \
   && apt-get install -y \
     build-essential \
     autoconf \
     python3 \
     uuid-dev \
     iasl \
+    gawk \
     git \
     gcc \
+    nasm \
     bison \
     flex \
     texinfo \
     libgmp-dev \
     libmpfr-dev \
     libmpc-dev \
-    python3-distutils \
     gcc-arm-linux-gnueabi \
     gcc-aarch64-linux-gnu \
     gcc-riscv64-unknown-elf \
-  && apt-get clean \
   && ln -sf /usr/bin/python3 /usr/bin/python
 
-# Build and install nasm 2.16.01 manually
-RUN git clone https://github.com/netwide-assembler/nasm.git \
-    --branch nasm-2.16.01 \
-    --depth 1 \
-  && cd nasm \
-  && ./autogen.sh \
-  && ./configure \
-  && make \
-  && make install || true \
-  && cd .. \
-  && rm -rf nasm
-
-# Manually build and install binutils 2.42 for loongson (loongarch64)
+# Manually build and install binutils 2.43 for loongson (loongarch64)
 RUN git clone https://sourceware.org/git/binutils-gdb.git \
-    --branch=binutils-2_42 \
+    --branch=binutils-2_43-branch \
     --depth 1 \
   && mkdir -p binutils-gdb/build \
   && cd binutils-gdb/build \
