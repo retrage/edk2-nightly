@@ -173,6 +173,41 @@ commands:
           paths:
             - bin/<< parameters.target >><< parameters.arch >>_VIRT_CODE.fd
             - bin/<< parameters.target >><< parameters.arch >>_VIRT_VARS.fd
+  loongarch64-virt:
+    description: "Build LoongArchVirt"
+    parameters:
+      arch:
+        type: string
+        default: "LOONGARCH64"
+      target:
+        type: string
+        default: "RELEASE"
+    steps:
+      - run:
+          name: Build LoongArchVirt
+          command: |
+            export GCC5_LOONGARCH64_PREFIX=loongarch64-linux-gnu-
+            source ./edksetup.sh
+            build -q \
+              -p OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc \
+              -D SECURE_BOOT_ENABLE=TRUE \
+              -b << parameters.target >> \
+              -a << parameters.arch >> \
+              -t GCC5
+      - run:
+          name: Deploy LoongArchVirt
+          working_directory: /src/edk2-nightly
+          environment:
+            SRC: /src/edk2/Build/LoongArchVirtQemu/<< parameters.target >>_GCC5/FV
+            DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
+          command: |
+            cp ${SRC}/QEMU_EFI.fd ${DST}_QEMU_EFI.fd
+            cp ${SRC}/QEMU_VARS.fd ${DST}_QEMU_VARS.fd
+      - persist_to_workspace:
+          root: /src/edk2-nightly
+          paths:
+            - bin/<< parameters.target >><< parameters.arch >>_QEMU_EFI.fd
+            - bin/<< parameters.target >><< parameters.arch >>_QEMU_VARS.fd
 jobs:
   build-ia32-qemu:
     executor: build-executor
@@ -219,6 +254,14 @@ jobs:
       - riscv-virt:
           target: "RELEASE"
       - riscv-virt:
+          target: "DEBUG"
+  build-loongarch64-qemu:
+    executor: build-executor
+    steps:
+      - init
+      - loongarch64-virt:
+          target: "RELEASE"
+      - loongarch64-virt:
           target: "DEBUG"
   build-ia32-shell:
     executor: build-executor
@@ -304,6 +347,7 @@ workflows:
       - build-arm-qemu
       - build-aarch64-qemu
       - build-riscv64-qemu
+      - build-loongarch64-qemu
       - build-ia32-shell
       - build-x64-shell
       - build-arm-shell
@@ -317,6 +361,7 @@ workflows:
             - build-arm-qemu
             - build-aarch64-qemu
             - build-riscv64-qemu
+            - build-loongarch64-qemu
             - build-ia32-shell
             - build-x64-shell
             - build-arm-shell
@@ -337,6 +382,7 @@ workflows:
       - build-arm-qemu
       - build-aarch64-qemu
       - build-riscv64-qemu
+      - build-loongarch64-qemu
       - build-ia32-shell
       - build-x64-shell
       - build-arm-shell
@@ -350,6 +396,7 @@ workflows:
             - build-arm-qemu
             - build-aarch64-qemu
             - build-riscv64-qemu
+            - build-loongarch64-qemu
             - build-ia32-shell
             - build-x64-shell
             - build-arm-shell

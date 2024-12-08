@@ -9,7 +9,7 @@ This repository provides unofficial
 nightly build.
 It currently builds
 [OVMF](https://github.com/tianocore/tianocore.github.io/wiki/OVMF)
-for x64, IA-32 and RISC-V 64-bit,
+for x64, IA-32, RISC-V 64-bit and LoongArch64,
 [ArmVirtPkg](https://github.com/tianocore/tianocore.github.io/wiki/ArmVirtPkg)
 for AArch64 and ARM,
 and
@@ -27,6 +27,7 @@ for x64, IA-32, AArch64, ARM, RISC-V 64-bit, and LoongArch64 both Debug and Rele
 | AARCH64 |                    [DEBUGAARCH64\_QEMU\_EFI.fd](bin/DEBUGAARCH64_QEMU_EFI.fd)<br>[DEBUGAARCH64\_QEMU\_VARS.fd](bin/DEBUGAARCH64_QEMU_VARS.fd)                   |                      [RELEASEAARCH64\_QEMU\_EFI.fd](bin/RELEASEAARCH64_QEMU_EFI.fd)<br>[RELEASEAARCH64\_QEMU\_VARS.fd](bin/RELEASEAARCH64_QEMU_VARS.fd)                     |
 | ARM     | [DEBUGARM\_QEMU\_EFI.fd](bin/DEBUGARM_QEMU_EFI.fd)<br>[DEBUGARM\_QEMU\_VARS.fd](bin/DEBUGARM_QEMU_VARS.fd)                                                      | [RELEASEARM\_QEMU\_EFI.fd](bin/RELEASEARM_QEMU_EFI.fd)<br>[RELEASEARM\_QEMU\_VARS.fd](bin/RELEASEARM_QEMU_VARS.fd)                                                          |
 | RISCV64 | [DEBUGRISCV64\_VIRT.fd](bin/DEBUGRISCV64_VIRT.fd) (Not tested)                                                                                                 | [RELEASERISCV64\_VIRT.fd](bin/RELEASERISCV64_VIRT.fd) (Not tested)                                                                                                         |
+| LOONGARCH64 |                    [DEBUGLOONGARCH64\_QEMU\_EFI.fd](bin/DEBUGLOONGARCH64_QEMU_EFI.fd) (Not tested) <br>[DEBUGLOONGARCH64\_QEMU\_VARS.fd](bin/DEBUGLOONGARCH64_QEMU_VARS.fd)                   |                      [RELEASELOONGARCH64\_QEMU\_EFI.fd](bin/RELEASELOONGARCH64_QEMU_EFI.fd) (Not tested) <br>[RELEASELOONGARCH64\_QEMU\_VARS.fd](bin/RELEASELOONGARCH64_QEMU_VARS.fd)                     |
 
 ### UEFI Shell
 
