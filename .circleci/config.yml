@@ -83,7 +83,7 @@ commands:
             export GCC5_ARM_PREFIX=arm-linux-gnueabi-
             export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
             export GCC5_LOONGARCH64_PREFIX=loongarch64-linux-gnu-
-            export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
+            export GCC5_RISCV64_PREFIX=riscv64-linux-gnu-
             source ./edksetup.sh
             build -q \
               -p ShellPkg/ShellPkg.dsc \
@@ -151,7 +151,7 @@ commands:
       - run:
           name: Build RiscVVirt
           command: |
-            export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
+            export GCC5_RISCV64_PREFIX=riscv64-linux-gnu-
             source ./edksetup.sh
             build -q \
               -p OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc \

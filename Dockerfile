@@ -24,7 +24,7 @@ RUN \
     libmpc-dev \
     gcc-arm-linux-gnueabi \
     gcc-aarch64-linux-gnu \
-    gcc-riscv64-unknown-elf \
+    gcc-riscv64-linux-gnu \
   && ln -sf /usr/bin/python3 /usr/bin/python
 
 # Manually build and install binutils 2.43 for loongson (loongarch64)
