@@ -47,7 +47,7 @@ RUN git clone https://sourceware.org/git/binutils-gdb.git \
 # FIXME: Specify commit hash for consistency
 RUN git clone git://gcc.gnu.org/git/gcc.git \
     --branch=master \
-    --depth 1 \
+  && git -C gcc checkout 0c0f33bc439a98f9923a48be592bb9a2be540ac3 \
   && mkdir -p gcc/build \
   && cd gcc/build \
   && ../configure \
