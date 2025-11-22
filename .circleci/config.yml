@@ -80,7 +80,6 @@ commands:
       - run:
           name: Build UEFI Shell
           command: |
-            export GCC5_ARM_PREFIX=arm-linux-gnueabi-
             export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
             export GCC5_LOONGARCH64_PREFIX=loongarch64-linux-gnu-
             export GCC5_RISCV64_PREFIX=riscv64-linux-gnu-
@@ -115,7 +114,6 @@ commands:
       - run:
           name: Build ArmVirt
           command: |
-            export GCC5_ARM_PREFIX=arm-linux-gnueabi-
             export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
             source ./edksetup.sh
             build -q \
@@ -229,16 +227,6 @@ jobs:
           target: "RELEASE"
       - ovmf:
           target: "DEBUG"
-  build-arm-qemu:
-    executor: build-executor
-    steps:
-      - init
-      - arm-virt:
-          arch: "ARM"
-          target: "RELEASE"
-      - arm-virt:
-          arch: "ARM"
-          target: "DEBUG"
   build-aarch64-qemu:
     executor: build-executor
     steps:
@@ -283,16 +271,6 @@ jobs:
       - shell:
           arch: "X64"
           target: "DEBUG"
-  build-arm-shell:
-    executor: build-executor
-    steps:
-      - init
-      - shell:
-          arch: "ARM"
-          target: "DEBUG"
-      - shell:
-          arch: "ARM"
-          target: "RELEASE"
   build-aarch64-shell:
     executor: build-executor
     steps:
@@ -344,13 +322,11 @@ workflows:
     jobs:
       - build-ia32-qemu
       - build-x64-qemu
-      - build-arm-qemu
       - build-aarch64-qemu
       - build-riscv64-qemu
       - build-loongarch64-qemu
       - build-ia32-shell
       - build-x64-shell
-      - build-arm-shell
       - build-aarch64-shell
       - build-riscv64-shell
       - build-loongarch64-shell
@@ -358,13 +334,11 @@ workflows:
           requires:
             - build-ia32-qemu
             - build-x64-qemu
-            - build-arm-qemu
             - build-aarch64-qemu
             - build-riscv64-qemu
             - build-loongarch64-qemu
             - build-ia32-shell
             - build-x64-shell
-            - build-arm-shell
             - build-aarch64-shell
             - build-riscv64-shell
             - build-loongarch64-shell
@@ -379,13 +353,11 @@ workflows:
     jobs:
       - build-ia32-qemu
       - build-x64-qemu
-      - build-arm-qemu
       - build-aarch64-qemu
       - build-riscv64-qemu
       - build-loongarch64-qemu
       - build-ia32-shell
       - build-x64-shell
-      - build-arm-shell
       - build-aarch64-shell
       - build-riscv64-shell
       - build-loongarch64-shell
@@ -393,13 +365,11 @@ workflows:
           requires:
             - build-ia32-qemu
             - build-x64-qemu
-            - build-arm-qemu
             - build-aarch64-qemu
             - build-riscv64-qemu
             - build-loongarch64-qemu
             - build-ia32-shell
             - build-x64-shell
-            - build-arm-shell
             - build-aarch64-shell
             - build-riscv64-shell
             - build-loongarch64-shell
