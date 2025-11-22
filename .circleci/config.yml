@@ -107,6 +107,9 @@ commands:
       arch:
         type: string
         default: "AARCH64"
+      arch_name:
+        type: string
+        default: "AArch64"
       target:
         type: string
         default: "RELEASE"
@@ -126,7 +129,7 @@ commands:
           name: Deploy ArmVirt
           working_directory: /src/edk2-nightly
           environment:
-            SRC: /src/edk2/Build/ArmVirtQemu-<< parameters.arch>>/<< parameters.target >>_GCC5/FV
+            SRC: /src/edk2/Build/ArmVirtQemu-<< parameters.arch_name>>/<< parameters.target >>_GCC5/FV
             DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
           command: |
             cp ${SRC}/QEMU_EFI.fd ${DST}_QEMU_EFI.fd
