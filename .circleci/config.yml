@@ -156,7 +156,7 @@ commands:
             source ./edksetup.sh
             build -q \
               -p OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc \
-              -D SECURE_BOOT_ENABLE=TRUE \
+              -D SECURE_BOOT_ENABLE=FALSE \
               -b << parameters.target >> \
               -a << parameters.arch >> \
               -t GCC5
