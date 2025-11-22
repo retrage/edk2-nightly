@@ -80,7 +80,6 @@ commands:
       - run:
           name: Build UEFI Shell
           command: |
-            export GCC5_ARM_PREFIX=arm-linux-gnueabi-
             export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
             export GCC5_LOONGARCH64_PREFIX=loongarch64-linux-gnu-
             export GCC5_RISCV64_PREFIX=riscv64-linux-gnu-
@@ -108,6 +107,9 @@ commands:
       arch:
         type: string
         default: "AARCH64"
+      arch_name:
+        type: string
+        default: "AArch64"
       target:
         type: string
         default: "RELEASE"
@@ -115,7 +117,6 @@ commands:
       - run:
           name: Build ArmVirt
           command: |
-            export GCC5_ARM_PREFIX=arm-linux-gnueabi-
             export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
             source ./edksetup.sh
             build -q \
@@ -128,7 +129,7 @@ commands:
           name: Deploy ArmVirt
           working_directory: /src/edk2-nightly
           environment:
-            SRC: /src/edk2/Build/ArmVirtQemu-<< parameters.arch>>/<< parameters.target >>_GCC5/FV
+            SRC: /src/edk2/Build/ArmVirtQemu-<< parameters.arch_name>>/<< parameters.target >>_GCC5/FV
             DST: /src/edk2-nightly/bin/<< parameters.target >><< parameters.arch >>
           command: |
             cp ${SRC}/QEMU_EFI.fd ${DST}_QEMU_EFI.fd
@@ -155,7 +156,7 @@ commands:
             source ./edksetup.sh
             build -q \
               -p OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc \
-              -D SECURE_BOOT_ENABLE=TRUE \
+              -D SECURE_BOOT_ENABLE=FALSE \
               -b << parameters.target >> \
               -a << parameters.arch >> \
               -t GCC5
@@ -209,18 +210,6 @@ commands:
             - bin/<< parameters.target >><< parameters.arch >>_QEMU_EFI.fd
             - bin/<< parameters.target >><< parameters.arch >>_QEMU_VARS.fd
 jobs:
-  build-ia32-qemu:
-    executor: build-executor
-    steps:
-      - init
-      - ovmf:
-          dsc: "Ia32"
-          arch: "IA32"
-          target: "RELEASE"
-      - ovmf:
-          dsc: "Ia32"
-          arch: "IA32"
-          target: "DEBUG"
   build-x64-qemu:
     executor: build-executor
     steps:
@@ -228,16 +217,6 @@ jobs:
       - ovmf:
           target: "RELEASE"
       - ovmf:
-          target: "DEBUG"
-  build-arm-qemu:
-    executor: build-executor
-    steps:
-      - init
-      - arm-virt:
-          arch: "ARM"
-          target: "RELEASE"
-      - arm-virt:
-          arch: "ARM"
           target: "DEBUG"
   build-aarch64-qemu:
     executor: build-executor
@@ -283,16 +262,6 @@ jobs:
       - shell:
           arch: "X64"
           target: "DEBUG"
-  build-arm-shell:
-    executor: build-executor
-    steps:
-      - init
-      - shell:
-          arch: "ARM"
-          target: "DEBUG"
-      - shell:
-          arch: "ARM"
-          target: "RELEASE"
   build-aarch64-shell:
     executor: build-executor
     steps:
@@ -342,29 +311,23 @@ workflows:
   version: 2.1
   commit:
     jobs:
-      - build-ia32-qemu
       - build-x64-qemu
-      - build-arm-qemu
       - build-aarch64-qemu
       - build-riscv64-qemu
       - build-loongarch64-qemu
       - build-ia32-shell
       - build-x64-shell
-      - build-arm-shell
       - build-aarch64-shell
       - build-riscv64-shell
       - build-loongarch64-shell
       - deploy:
           requires:
-            - build-ia32-qemu
             - build-x64-qemu
-            - build-arm-qemu
             - build-aarch64-qemu
             - build-riscv64-qemu
             - build-loongarch64-qemu
             - build-ia32-shell
             - build-x64-shell
-            - build-arm-shell
             - build-aarch64-shell
             - build-riscv64-shell
             - build-loongarch64-shell
@@ -377,29 +340,23 @@ workflows:
               only:
                 - master
     jobs:
-      - build-ia32-qemu
       - build-x64-qemu
-      - build-arm-qemu
       - build-aarch64-qemu
       - build-riscv64-qemu
       - build-loongarch64-qemu
       - build-ia32-shell
       - build-x64-shell
-      - build-arm-shell
       - build-aarch64-shell
       - build-riscv64-shell
       - build-loongarch64-shell
       - deploy:
           requires:
-            - build-ia32-qemu
             - build-x64-qemu
-            - build-arm-qemu
             - build-aarch64-qemu
             - build-riscv64-qemu
             - build-loongarch64-qemu
             - build-ia32-shell
             - build-x64-shell
-            - build-arm-shell
             - build-aarch64-shell
             - build-riscv64-shell
             - build-loongarch64-shell
