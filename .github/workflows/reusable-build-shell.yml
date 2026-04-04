@@ -1,0 +1,77 @@
+name: Reusable Shell Build
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        type: string
+      arch:
+        required: true
+        type: string
+      edk2_cache_key:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ghcr.io/retrage/edk2-nightly:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Restore prepared sources
+        id: restore-edk2
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ github.workspace }}/_src/edk2
+          key: ${{ inputs.edk2_cache_key }}
+
+      - name: Prepare build workspace
+        working-directory: /
+        env:
+          EDK2_DIR: ${{ github.workspace }}/_src/edk2
+          ARTIFACT_DIR: ${{ github.workspace }}/_artifacts/bin
+        run: |
+          if [[ "${{ steps.restore-edk2.outputs.cache-hit }}" != "true" ]]; then
+            echo "Prepared source cache not found: ${{ inputs.edk2_cache_key }}" >&2
+            exit 1
+          fi
+          test -f "${EDK2_DIR}/edksetup.sh"
+          test -d "${EDK2_DIR}/BaseTools/Source/C/bin"
+          rm -rf "${ARTIFACT_DIR}"
+          mkdir -p "${ARTIFACT_DIR}"
+
+      - name: Build shell
+        working-directory: ${{ github.workspace }}/_src/edk2
+        env:
+          ARTIFACT_DIR: ${{ github.workspace }}/_artifacts/bin
+          TARGET_ARCH: ${{ inputs.arch }}
+        run: |
+          export GCC_AARCH64_PREFIX=aarch64-linux-gnu-
+          export GCC_LOONGARCH64_PREFIX=loongarch64-linux-gnu-
+          export GCC_RISCV64_PREFIX=riscv64-linux-gnu-
+
+          source ./edksetup.sh
+
+          for target in RELEASE DEBUG; do
+            build -q \
+              -p ShellPkg/ShellPkg.dsc \
+              -b "${target}" \
+              -a "${TARGET_ARCH}" \
+              -t GCC
+
+            src="Build/Shell/${target}_GCC/${TARGET_ARCH}"
+            cp "${src}/Shell_EA4BB293-2D7F-4456-A681-1F22F42CD0BC.efi" \
+              "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_Shell.efi"
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ github.workspace }}/_artifacts/bin
