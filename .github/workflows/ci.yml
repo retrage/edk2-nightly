@@ -8,8 +8,81 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
+  prepare-sources:
+    name: Prepare edk2 sources
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ghcr.io/retrage/edk2-nightly:latest
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      edk2_cache_key: ${{ steps.prepared.outputs.cache_key }}
+      edk2_sha: ${{ steps.prepared.outputs.edk2_sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            Dockerfile
+
+      - name: Resolve cache metadata
+        id: metadata
+        working-directory: /
+        run: |
+          dockerfile_hash="$(sha256sum "${GITHUB_WORKSPACE}/Dockerfile" | cut -d' ' -f1)"
+          requested_sha="$(git ls-remote https://github.com/tianocore/edk2.git HEAD | cut -f1)"
+          echo "dockerfile_hash=${dockerfile_hash}" >> "${GITHUB_OUTPUT}"
+          echo "requested_sha=${requested_sha}" >> "${GITHUB_OUTPUT}"
+          echo "cache_key=${{ runner.os }}-edk2-${dockerfile_hash}-${requested_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Restore cached sources
+        id: restore-edk2
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ github.workspace }}/_src/edk2
+          key: ${{ steps.metadata.outputs.cache_key }}
+
+      - name: Prepare sources
+        if: steps.restore-edk2.outputs.cache-hit != 'true'
+        working-directory: /
+        env:
+          EDK2_DIR: ${{ github.workspace }}/_src/edk2
+        run: |
+          rm -rf "${EDK2_DIR}"
+          mkdir -p "$(dirname "${EDK2_DIR}")"
+          git clone \
+            --depth 1 \
+            --recurse-submodules \
+            --shallow-submodules \
+            --jobs 8 \
+            https://github.com/tianocore/edk2.git \
+            "${EDK2_DIR}"
+          make -C "${EDK2_DIR}/BaseTools"
+
+      - name: Capture prepared source revision
+        id: prepared
+        working-directory: /
+        env:
+          EDK2_DIR: ${{ github.workspace }}/_src/edk2
+        run: |
+          edk2_sha="$(git -C "${EDK2_DIR}" rev-parse HEAD)"
+          echo "edk2_sha=${edk2_sha}" >> "${GITHUB_OUTPUT}"
+          echo "cache_key=${{ runner.os }}-edk2-${{ steps.metadata.outputs.dockerfile_hash }}-${edk2_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Save cached sources
+        if: steps.restore-edk2.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ github.workspace }}/_src/edk2
+          key: ${{ steps.prepared.outputs.cache_key }}
+
   build-firmware:
     name: ${{ matrix.name }}
+    needs: prepare-sources
     strategy:
       fail-fast: false
       matrix:
@@ -35,9 +108,11 @@ jobs:
       artifact_name: ${{ matrix.artifact_name }}
       build_kind: ${{ matrix.build_kind }}
       arch: ${{ matrix.arch }}
+      edk2_cache_key: ${{ needs.prepare-sources.outputs.edk2_cache_key }}
 
   build-shell:
     name: ${{ matrix.name }}
+    needs: prepare-sources
     strategy:
       fail-fast: false
       matrix:
@@ -61,6 +136,7 @@ jobs:
     with:
       artifact_name: ${{ matrix.artifact_name }}
       arch: ${{ matrix.arch }}
+      edk2_cache_key: ${{ needs.prepare-sources.outputs.edk2_cache_key }}
 
   deploy:
     name: Deploy binaries

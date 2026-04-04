@@ -12,6 +12,9 @@ on:
       arch:
         required: true
         type: string
+      edk2_cache_key:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -24,19 +27,30 @@ jobs:
       run:
         shell: bash
     steps:
-      - name: Prepare sources
+      - name: Restore prepared sources
+        id: restore-edk2
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ github.workspace }}/_src/edk2
+          key: ${{ inputs.edk2_cache_key }}
+
+      - name: Prepare build workspace
         working-directory: /
         env:
+          EDK2_DIR: ${{ github.workspace }}/_src/edk2
           ARTIFACT_DIR: ${{ github.workspace }}/_artifacts/bin
         run: |
+          if [[ "${{ steps.restore-edk2.outputs.cache-hit }}" != "true" ]]; then
+            echo "Prepared source cache not found: ${{ inputs.edk2_cache_key }}" >&2
+            exit 1
+          fi
+          test -f "${EDK2_DIR}/edksetup.sh"
+          test -d "${EDK2_DIR}/BaseTools/Source/C/bin"
           rm -rf "${ARTIFACT_DIR}"
-          mkdir -p /src/edk2 "${ARTIFACT_DIR}"
-          git clone https://github.com/tianocore/edk2.git --depth 1 /src/edk2
-          git -C /src/edk2 submodule update --init --recursive
-          make -C /src/edk2/BaseTools
+          mkdir -p "${ARTIFACT_DIR}"
 
       - name: Build firmware
-        working-directory: /src/edk2
+        working-directory: ${{ github.workspace }}/_src/edk2
         env:
           ARTIFACT_DIR: ${{ github.workspace }}/_artifacts/bin
           BUILD_KIND: ${{ inputs.build_kind }}
@@ -82,7 +96,7 @@ jobs:
               -a "${TARGET_ARCH}" \
               -t GCC
 
-            src="/src/edk2/Build/${build_dir}/${target}_GCC/FV"
+            src="Build/${build_dir}/${target}_GCC/FV"
             case "${BUILD_KIND}" in
               ovmf)
                 cp "${src}/OVMF.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_OVMF.fd"
