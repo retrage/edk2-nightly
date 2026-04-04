@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build-firmware:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Build QEMU (X64)
+            artifact_name: edk2-bin-x64-qemu
+            build_kind: ovmf
+            arch: X64
+          - name: Build QEMU (AArch64)
+            artifact_name: edk2-bin-aarch64-qemu
+            build_kind: arm-virt
+            arch: AARCH64
+          - name: Build QEMU (RISC-V64)
+            artifact_name: edk2-bin-riscv64-qemu
+            build_kind: riscv-virt
+            arch: RISCV64
+          - name: Build QEMU (LoongArch64)
+            artifact_name: edk2-bin-loongarch64-qemu
+            build_kind: loongarch64-virt
+            arch: LOONGARCH64
+    uses: ./.github/workflows/reusable-build-firmware.yml
+    with:
+      artifact_name: ${{ matrix.artifact_name }}
+      build_kind: ${{ matrix.build_kind }}
+      arch: ${{ matrix.arch }}
+
+  build-shell:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Build Shell (IA32)
+            artifact_name: edk2-bin-ia32-shell
+            arch: IA32
+          - name: Build Shell (X64)
+            artifact_name: edk2-bin-x64-shell
+            arch: X64
+          - name: Build Shell (AArch64)
+            artifact_name: edk2-bin-aarch64-shell
+            arch: AARCH64
+          - name: Build Shell (RISC-V64)
+            artifact_name: edk2-bin-riscv64-shell
+            arch: RISCV64
+          - name: Build Shell (LoongArch64)
+            artifact_name: edk2-bin-loongarch64-shell
+            arch: LOONGARCH64
+    uses: ./.github/workflows/reusable-build-shell.yml
+    with:
+      artifact_name: ${{ matrix.artifact_name }}
+      arch: ${{ matrix.arch }}
+
+  deploy:
+    name: Deploy binaries
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
+    needs:
+      - build-firmware
+      - build-shell
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Update bin directory
+        shell: bash
+        run: |
+          mkdir -p bin
+          find artifacts -type f -exec cp {} bin/ \;
+          rm -rf artifacts
+
+      - name: Deploy binaries
+        shell: bash
+        run: bash deploy.sh

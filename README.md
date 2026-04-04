@@ -54,9 +54,13 @@ ARM support for UEFI Shell has been removed by https://github.com/tianocore/edk2
 
 ## Build system
 
-The build system is constructed on the top of CircleCI using
+The build system is constructed on the top of GitHub Actions using
 [Dockerfile](Dockerfile)
+and reusable workflows.
 The nightly build is scuduled at 00:00 UTC every day.
 Please see
-[.circleci/config.yml](.circleci/config.yml)
+[.github/workflows/ci.yml](.github/workflows/ci.yml),
+[.github/workflows/reusable-build-firmware.yml](.github/workflows/reusable-build-firmware.yml),
+and
+[.github/workflows/reusable-build-shell.yml](.github/workflows/reusable-build-shell.yml)
 for more details.

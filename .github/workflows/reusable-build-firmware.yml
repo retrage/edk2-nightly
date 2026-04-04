@@ -1,0 +1,107 @@
+name: Reusable Firmware Build
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        type: string
+      build_kind:
+        required: true
+        type: string
+      arch:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: ghcr.io/retrage/edk2-nightly:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Prepare sources
+        working-directory: /
+        env:
+          ARTIFACT_DIR: ${{ github.workspace }}/_artifacts/bin
+        run: |
+          rm -rf "${ARTIFACT_DIR}"
+          mkdir -p /src/edk2 "${ARTIFACT_DIR}"
+          git clone https://github.com/tianocore/edk2.git --depth 1 /src/edk2
+          git -C /src/edk2 submodule update --init --recursive
+          make -C /src/edk2/BaseTools
+
+      - name: Build firmware
+        working-directory: /src/edk2
+        env:
+          ARTIFACT_DIR: ${{ github.workspace }}/_artifacts/bin
+          BUILD_KIND: ${{ inputs.build_kind }}
+          TARGET_ARCH: ${{ inputs.arch }}
+        run: |
+          case "${BUILD_KIND}" in
+            ovmf)
+              dsc_path="OvmfPkg/OvmfPkgX64.dsc"
+              secure_boot="TRUE"
+              build_dir="OvmfX64"
+              ;;
+            arm-virt)
+              export GCC_AARCH64_PREFIX=aarch64-linux-gnu-
+              dsc_path="ArmVirtPkg/ArmVirtQemu.dsc"
+              secure_boot="TRUE"
+              build_dir="ArmVirtQemu-AArch64"
+              ;;
+            riscv-virt)
+              export GCC_RISCV64_PREFIX=riscv64-linux-gnu-
+              dsc_path="OvmfPkg/RiscVVirt/RiscVVirtQemu.dsc"
+              secure_boot="FALSE"
+              build_dir="RiscVVirtQemu"
+              ;;
+            loongarch64-virt)
+              export GCC_LOONGARCH64_PREFIX=loongarch64-linux-gnu-
+              dsc_path="OvmfPkg/LoongArchVirt/LoongArchVirtQemu.dsc"
+              secure_boot="TRUE"
+              build_dir="LoongArchVirtQemu"
+              ;;
+            *)
+              echo "Unsupported build kind: ${BUILD_KIND}" >&2
+              exit 1
+              ;;
+          esac
+
+          source ./edksetup.sh
+
+          for target in RELEASE DEBUG; do
+            build -q \
+              -p "${dsc_path}" \
+              -D SECURE_BOOT_ENABLE="${secure_boot}" \
+              -b "${target}" \
+              -a "${TARGET_ARCH}" \
+              -t GCC
+
+            src="/src/edk2/Build/${build_dir}/${target}_GCC/FV"
+            case "${BUILD_KIND}" in
+              ovmf)
+                cp "${src}/OVMF.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_OVMF.fd"
+                cp "${src}/OVMF_CODE.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_OVMF_CODE.fd"
+                cp "${src}/OVMF_VARS.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_OVMF_VARS.fd"
+                ;;
+              arm-virt|loongarch64-virt)
+                cp "${src}/QEMU_EFI.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_QEMU_EFI.fd"
+                cp "${src}/QEMU_VARS.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_QEMU_VARS.fd"
+                ;;
+              riscv-virt)
+                cp "${src}/RISCV_VIRT_CODE.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_VIRT_CODE.fd"
+                cp "${src}/RISCV_VIRT_VARS.fd" "${ARTIFACT_DIR}/${target}${TARGET_ARCH}_VIRT_VARS.fd"
+                ;;
+            esac
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ github.workspace }}/_artifacts/bin

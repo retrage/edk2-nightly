@@ -1,9 +1,15 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
-git config --global user.name "CircleCI"
-git config --global user.email "<>"
-git pull
-git add -A
+set -euo pipefail
+
+git config --global user.name "github-actions[bot]"
+git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+git pull --ff-only
+git add -A -- bin
+
+if git diff --cached --quiet; then
+  exit 0
+fi
+
 git commit -m "[ci skip] Deploy nightly build"
-
-git push $(git config --get remote.origin.url) master:master
+git push origin HEAD:master
